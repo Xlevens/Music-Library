@@ -1,0 +1,74 @@
+<!-- ============================================ -->
+<!-- music/templates/music/song_list.html -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}Browse Songs - Cloud Music Library{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-list"></i> Browse Songs</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-filter"></i> Filters</h5>
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Genre</label>
+                        <select name="genre" class="form-select">
+                            <option value="">All Genres</option>
+                            {% for genre in genres %}
+                            <option value="{{ genre.id }}">{{ genre.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Artist</label>
+                        <select name="artist" class="form-select">
+                            <option value="">All Artists</option>
+                            {% for artist in artists %}
+                            <option value="{{ artist.id }}">{{ artist.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="row">
+            {% for song in songs %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">{{ song.title|truncatewords:5 }}</h6>
+                        <p class="card-text text-muted mb-1">{{ song.artist.name }}</p>
+                        {% if song.genre %}
+                        <small class="badge bg-secondary">{{ song.genre.name }}</small>
+                        {% endif %}
+                        <br>
+                        <small class="text-muted"><i class="fas fa-play-circle"></i> {{ song.play_count }} plays</small>
+                        <div class="mt-2">
+                            <a href="{% url 'music:song_detail' song.pk %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-play"></i> Play
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> No songs found. Try adjusting your filters.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

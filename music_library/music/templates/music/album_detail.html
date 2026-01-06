@@ -1,0 +1,115 @@
+<!-- ============================================ -->
+<!-- music/templates/music/album_detail.html -->
+<!-- Individual album page -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}{{ album.title }} - Cloud Music Library{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Album Header -->
+        <div class="d-flex align-items-start mb-4">
+            {% if album.cover_image %}
+            <img src="{{ album.cover_image.url }}" alt="{{ album.title }}"
+                style="width: 200px; height: 200px; object-fit: cover; border-radius: 15px;" class="me-4">
+            {% else %}
+            <div class="me-4 text-center"
+                style="width: 200px; height: 200px; background: var(--secondary-gradient); border-radius: 15px; padding: 60px;">
+                <i class="fas fa-compact-disc fa-4x text-white"></i>
+            </div>
+            {% endif %}
+
+            <div class="flex-grow-1">
+                <h1>{{ album.title }}</h1>
+                <h4 class="text-muted">by <a href="{% url 'music:artist_detail' album.artist.pk %}">{{ album.artist.name
+                        }}</a></h4>
+                {% if album.release_date %}
+                <p class="text-muted"><i class="fas fa-calendar"></i> Released: {{ album.release_date|date:"F Y" }}</p>
+                {% endif %}
+                {% if album.record_label %}
+                <p class="text-muted"><i class="fas fa-tag"></i> Label: {{ album.record_label }}</p>
+                {% endif %}
+                {% if album.description %}
+                <p>{{ album.description }}</p>
+                {% endif %}
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">{{ album.song_count }} Songs</span>
+                    <span class="badge bg-info">{{ album.total_duration_formatted }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tracklist -->
+        <h4 class="mb-3"><i class="fas fa-list-ol"></i> Tracklist</h4>
+        {% if songs %}
+        <div class="list-group">
+            {% for song in songs %}
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ forloop.counter }}. {{ song.title }}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> {{ song.duration_formatted }}
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-play-circle"></i> {{ song.play_count }}
+                        </small>
+                        <a href="{% url 'music:song_detail' song.pk %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-play"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No songs in this album yet.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Album Info</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Title:</strong><br>
+                    {{ album.title }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Artist:</strong><br>
+                    <a href="{% url 'music:artist_detail' album.artist.pk %}">{{ album.artist.name }}</a>
+                </li>
+                {% if album.release_date %}
+                <li class="list-group-item">
+                    <strong>Release Date:</strong><br>
+                    {{ album.release_date|date:"F d, Y" }}
+                </li>
+                {% endif %}
+                {% if album.record_label %}
+                <li class="list-group-item">
+                    <strong>Record Label:</strong><br>
+                    {{ album.record_label }}
+                </li>
+                {% endif %}
+                <li class="list-group-item">
+                    <strong>Total Songs:</strong><br>
+                    {{ album.song_count }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Total Duration:</strong><br>
+                    {{ album.total_duration_formatted }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

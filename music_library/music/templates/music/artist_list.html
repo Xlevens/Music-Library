@@ -1,0 +1,72 @@
+<!-- ============================================ -->
+<!-- music/templates/music/artist_list.html -->
+<!-- Browse all artists -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}Artists - Cloud Music Library{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-microphone"></i> Browse Artists</h2>
+
+<p class="text-muted mb-4">Showing {{ artists|length }} artists</p>
+
+<div class="row">
+    {% for artist in artists %}
+    <div class="col-md-3 mb-4">
+        <div class="card h-100">
+            {% if artist.image %}
+            <img src="{{ artist.image.url }}" class="card-img-top" alt="{{ artist.name }}"
+                style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top text-center p-5" style="height: 200px; background: var(--primary-gradient);">
+                <i class="fas fa-microphone fa-4x text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body text-center">
+                <h5 class="card-title">{{ artist.name }}</h5>
+                <p class="card-text text-muted">
+                    <i class="fas fa-music"></i> {{ artist.song_count }} songs
+                </p>
+                <a href="{% url 'music:artist_detail' artist.pk %}" class="btn btn-primary w-100">
+                    <i class="fas fa-eye"></i> View Artist
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No artists found.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if artists.has_other_pages %}
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        {% if artists.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ artists.previous_page_number }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for num in artists.paginator.page_range %}
+        {% if artists.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > artists.number|add:'-3' and num < artists.number|add:'3' %} <li class="page-item"><a
+                class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if artists.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ artists.next_page_number }}">Next</a>
+            </li>
+            {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

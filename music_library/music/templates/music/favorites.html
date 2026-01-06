@@ -1,0 +1,61 @@
+<!-- ============================================ -->
+<!-- music/templates/music/favorites.html -->
+<!-- User's favorite songs -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}My Favorites - Cloud Music Library{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="fas fa-heart text-danger"></i> My Favorite Songs</h2>
+
+{% if favorites %}
+<p class="text-muted mb-4">You have {{ favorites.count }} favorite songs</p>
+
+<div class="list-group">
+    {% for favorite in favorites %}
+    <div class="list-group-item list-group-item-action">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1">
+                <h6 class="mb-1">{{ favorite.song.title }}</h6>
+                <p class="mb-1 text-muted small">
+                    <i class="fas fa-microphone"></i> {{ favorite.song.artist.name }}
+                    {% if favorite.song.album %}
+                    | <i class="fas fa-compact-disc"></i> {{ favorite.song.album.title }}
+                    {% endif %}
+                </p>
+                <small class="text-muted">
+                    Added {{ favorite.added_at|timesince }} ago
+                </small>
+            </div>
+            <div class="d-flex gap-2 align-items-center">
+                <small class="text-muted me-2">
+                    <i class="fas fa-play-circle"></i> {{ favorite.song.play_count }}
+                </small>
+                <a href="{% url 'music:song_detail' favorite.song.pk %}" class="btn btn-sm btn-primary">
+                    <i class="fas fa-play"></i> Play
+                </a>
+                <form action="{% url 'music:toggle_favorite' favorite.song.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Remove from favorites">
+                        <i class="fas fa-heart-broken"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info text-center">
+    <i class="fas fa-heart fa-3x mb-3"></i>
+    <h4>No Favorites Yet</h4>
+    <p>Start adding songs to your favorites by clicking the heart icon on any song!</p>
+    <a href="{% url 'music:song_list' %}" class="btn btn-primary">
+        <i class="fas fa-music"></i> Browse Songs
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+

@@ -1,0 +1,104 @@
+<!-- ============================================ -->
+<!-- music/templates/music/playlist_list.html -->
+<!-- View all playlists -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}My Playlists - Cloud Music Library{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-list-ul"></i> My Playlists</h2>
+    <a href="{% url 'music:create_playlist' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Create New Playlist
+    </a>
+</div>
+
+<!-- My Playlists -->
+<h4 class="mb-3">Your Playlists</h4>
+<div class="row mb-5">
+    {% for playlist in my_playlists %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if playlist.cover_image %}
+            <img src="{{ playlist.cover_image.url }}" class="card-img-top" alt="{{ playlist.name }}"
+                style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top text-center p-5" style="height: 200px; background: var(--primary-gradient);">
+                <i class="fas fa-list fa-4x text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ playlist.name }}</h5>
+                <p class="card-text text-muted">{{ playlist.description|truncatewords:15 }}</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-music"></i> {{ playlist.song_count }} songs
+                    </small>
+                    <small class="text-muted">
+                        <i class="fas fa-clock"></i> {{ playlist.total_duration_formatted }}
+                    </small>
+                </div>
+                {% if playlist.is_public %}
+                <span class="badge bg-success mb-2">Public</span>
+                {% else %}
+                <span class="badge bg-secondary mb-2">Private</span>
+                {% endif %}
+                {% if playlist.is_collaborative %}
+                <span class="badge bg-info mb-2">Collaborative</span>
+                {% endif %}
+                <div class="d-flex gap-2">
+                    <a href="{% url 'music:playlist_detail' playlist.pk %}" class="btn btn-sm btn-primary flex-grow-1">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="{% url 'music:edit_playlist' playlist.pk %}" class="btn btn-sm btn-outline-warning">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> You don't have any playlists yet.
+            <a href="{% url 'music:create_playlist' %}">Create your first playlist!</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Public Playlists -->
+{% if public_playlists %}
+<h4 class="mb-3">Public Playlists</h4>
+<div class="row">
+    {% for playlist in public_playlists %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if playlist.cover_image %}
+            <img src="{{ playlist.cover_image.url }}" class="card-img-top" alt="{{ playlist.name }}"
+                style="height: 200px; object-fit: cover;">
+            {% else %}
+            <div class="card-img-top text-center p-5" style="height: 200px; background: var(--secondary-gradient);">
+                <i class="fas fa-list fa-4x text-white"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ playlist.name }}</h5>
+                <p class="card-text text-muted small">By {{ playlist.user.username }}</p>
+                <p class="card-text text-muted">{{ playlist.description|truncatewords:15 }}</p>
+                <p class="mb-2">
+                    <small class="text-muted">
+                        <i class="fas fa-music"></i> {{ playlist.song_count }} songs
+                    </small>
+                </p>
+                <a href="{% url 'music:playlist_detail' playlist.pk %}" class="btn btn-sm btn-primary w-100">
+                    <i class="fas fa-eye"></i> View Playlist
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

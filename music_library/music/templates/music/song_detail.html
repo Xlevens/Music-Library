@@ -1,0 +1,58 @@
+<!-- ============================================ -->
+<!-- music/templates/music/song_detail.html -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}{{ song.title }} - Cloud Music Library{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2><i class="fas fa-music"></i> {{ song.title }}</h2>
+        <p class="lead text-muted">by {{ song.artist.name }}</p>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <audio controls class="w-100">
+                    <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <form action="{% url 'music:toggle_favorite' song.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="fas fa-heart{% if not is_favorite %}-broken{% endif %}"></i>
+                    {% if is_favorite %}Remove from{% else %}Add to{% endif %} Favorites
+                </button>
+            </form>
+            <a href="{% url 'music:add_to_playlist' song.pk %}" class="btn btn-outline-primary">
+                <i class="fas fa-plus"></i> Add to Playlist
+            </a>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-info-circle"></i> Song Details</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Artist:</strong> {{ song.artist.name }}</li>
+                {% if song.album %}
+                <li class="list-group-item"><strong>Album:</strong> {{ song.album.title }}</li>
+                {% endif %}
+                {% if song.genre %}
+                <li class="list-group-item"><strong>Genre:</strong> {{ song.genre.name }}</li>
+                {% endif %}
+                <li class="list-group-item"><strong>Duration:</strong> {{ song.duration|default:"Unknown" }}</li>
+                <li class="list-group-item"><strong>Plays:</strong> {{ song.play_count }}</li>
+                <li class="list-group-item"><strong>Uploaded by:</strong> {{ song.uploaded_by.username }}</li>
+                <li class="list-group-item"><strong>Upload Date:</strong> {{ song.upload_date|date:"M d, Y" }}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

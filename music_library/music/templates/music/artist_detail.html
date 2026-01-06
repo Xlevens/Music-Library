@@ -1,0 +1,134 @@
+<!-- ============================================ -->
+<!-- music/templates/music/artist_detail.html -->
+<!-- Individual artist page -->
+<!-- ============================================ -->
+{% extends 'base.html' %}
+
+{% block title %}{{ artist.name }} - Cloud Music Library{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <!-- Artist Header -->
+        <div class="d-flex align-items-start mb-4">
+            {% if artist.image %}
+            <img src="{{ artist.image.url }}" alt="{{ artist.name }}"
+                style="width: 200px; height: 200px; object-fit: cover; border-radius: 15px;" class="me-4">
+            {% else %}
+            <div class="me-4 text-center"
+                style="width: 200px; height: 200px; background: var(--primary-gradient); border-radius: 15px; padding: 60px;">
+                <i class="fas fa-microphone fa-4x text-white"></i>
+            </div>
+            {% endif %}
+
+            <div class="flex-grow-1">
+                <h1>{{ artist.name }}</h1>
+                {% if artist.country %}
+                <p class="text-muted"><i class="fas fa-globe"></i> {{ artist.country }}</p>
+                {% endif %}
+                {% if artist.bio %}
+                <p>{{ artist.bio }}</p>
+                {% endif %}
+                {% if artist.website %}
+                <p><a href="{{ artist.website }}" target="_blank"><i class="fas fa-link"></i> Official Website</a></p>
+                {% endif %}
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">{{ artist.song_count }} Songs</span>
+                    <span class="badge bg-info">{{ artist.album_count }} Albums</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Albums -->
+        {% if albums %}
+        <h4 class="mb-3"><i class="fas fa-compact-disc"></i> Albums</h4>
+        <div class="row mb-5">
+            {% for album in albums %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    {% if album.cover_image %}
+                    <img src="{{ album.cover_image.url }}" class="card-img-top" alt="{{ album.title }}"
+                        style="height: 150px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top text-center p-4"
+                        style="height: 150px; background: var(--secondary-gradient);">
+                        <i class="fas fa-compact-disc fa-3x text-white"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ album.title }}</h6>
+                        <p class="card-text small text-muted">
+                            {% if album.release_date %}{{ album.release_date.year }}{% endif %}
+                        </p>
+                        <a href="{% url 'music:album_detail' album.pk %}" class="btn btn-sm btn-primary w-100">
+                            View Album
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Songs -->
+        <h4 class="mb-3"><i class="fas fa-music"></i> All Songs</h4>
+        {% if songs %}
+        <div class="list-group">
+            {% for song in songs %}
+            <div class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-1">{{ song.title }}</h6>
+                        {% if song.album %}
+                        <small class="text-muted">{{ song.album.title }}</small>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex gap-2 align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-play-circle"></i> {{ song.play_count }}
+                        </small>
+                        <a href="{% url 'music:song_detail' song.pk %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-play"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No songs available for this artist.
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-info-circle"></i> Artist Info</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <strong>Name:</strong><br>
+                    {{ artist.name }}
+                </li>
+                {% if artist.country %}
+                <li class="list-group-item">
+                    <strong>Country:</strong><br>
+                    {{ artist.country }}
+                </li>
+                {% endif %}
+                <li class="list-group-item">
+                    <strong>Total Songs:</strong><br>
+                    {{ artist.song_count }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Albums:</strong><br>
+                    {{ artist.album_count }}
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
